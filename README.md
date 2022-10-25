@@ -1,9 +1,8 @@
-Hacktoberfest-2021
 # Ustream Smart Contract Repository
 
 **This is the smart comtract github repository for the blockchain architecture
 for Ustream Web3 feel free to leave any suggestions/contributions if you can
-so sit back and enjoy the code.  Happy hacking 💙 !!**
+so sit back and enjoy the code.  Happy hacking 💚💜 !!**
 
 P.S. Star ⭐ if you had fun!! 😍
 
