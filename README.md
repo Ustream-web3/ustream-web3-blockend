@@ -1,10 +1,9 @@
 Hacktoberfest-2021
 # Ustream Smart Contract Repository
 
-**This is a beginner-friendly project to help you get started with your
-[hacktoberfest](https://hacktoberfest.digitalocean.com/). If you don't
-know where to start, feel free to watch the videos linked below, and
-read the contribution rules. Happy hacking <3 💙 !!**
+**This is the smart comtract github repository for the blockchain architecture
+for Ustream Web3 feel free to leave any suggestions/contributions if you can
+so sit back and enjoy the code.  Happy hacking 💙 !!**
 
 P.S. Star ⭐ if you had fun!! 😍
 
