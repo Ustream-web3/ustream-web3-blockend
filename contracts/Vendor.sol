@@ -4,7 +4,7 @@ pragma solidity ^0.8.7;
 import "hardhat/console.sol";
 import "./StreamToken.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./PriceConverter.sol";
+import "./library/PriceConverter.sol";
 
 contract Vendor is Ownable {
     using PriceConverter for uint256;
