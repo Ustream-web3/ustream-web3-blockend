@@ -3,9 +3,11 @@ node_modules
 coverage
 coverage.json
 typechain
+temp_auto_push.bat
 typechain-types
 
 #Hardhat files
 cache
 artifacts
-
+deployments.gitignore
+branch_structure.json
