@@ -1,14 +1,16 @@
-const { network } = require("hardhat")
+const { network, ethers } = require("hardhat")
 const { developmentChains } = require("../helper-hardhat-config")
 const { verify } = require("../utils/verify")
 
+const TOKEN_CAP = ethers.utils.parseEther("100000")
+
 module.exports = async function ({ getNamedAccounts, deployments }) {
     const { deploy, log } = deployments
-    const { deployer } = await getNamedAccounts()
+    const { deployer, user } = await getNamedAccounts()
 
-    let streamTokenAddress, maticUsdPriceFeedAddress
+    let streamTokenAddress, maticUsdPriceFeedAddress, streamToken, vendor
 
-    const streamToken = await deployments.get("StreamToken")
+    streamToken = await ethers.getContract("StreamToken")
     streamTokenAddress = streamToken.address
     if (developmentChains.includes(network.name)) {
         const maticUsdAggregator = await deployments.get("MockV3Aggregator")
@@ -18,12 +20,23 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
     }
 
     const args = [streamTokenAddress, maticUsdPriceFeedAddress]
-    const vendor = await deploy("Vendor", {
+    // Deploying vendor contract
+    vendor = await deploy("Vendor", {
         from: deployer,
         args: args,
         log: true,
         waitConfirmations: network.config.blockConfirmations || 1,
     })
+    console.log("Vendor contract deployed!")
+    console.log("Transferring tokens to vendor contract...")
+
+    // streamToken = await streamToken.connect(deployer).deploy()
+    // vendor = vendor.connect(user)
+    const vendorAddress = vendor.address
+    await streamToken.approve(vendorAddress, TOKEN_CAP)
+    console.log("Approved ")
+    await streamToken.transfer(vendorAddress, TOKEN_CAP)
+    console.log("Tokens tranferred to vendor!")
 
     if (
         !developmentChains.includes(network.name) &&
