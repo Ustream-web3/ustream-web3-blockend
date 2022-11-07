@@ -2,6 +2,7 @@
 pragma solidity ^0.8.7;
 
 error UserRegistry__AccountExists();
+error UserRegistry__AccountInexisting();
 
 contract UserRegistry {
     uint256 public profileCount = 0;
@@ -18,25 +19,37 @@ contract UserRegistry {
     mapping(address => Profile) private s_profiles;
     mapping(address => bool) private s_profileCreated;
 
-    function createProfile(
-        string memory _username,
-        string memory _profileImgUri
-    ) external {
+    modifier existingUser() {
         if (s_profileCreated[msg.sender]) {
             revert UserRegistry__AccountExists();
         }
+        _;
+    }
+
+    modifier inExistingUser() {
+        if (!s_profileCreated[msg.sender]) {
+            revert UserRegistry__AccountInexisting();
+        }
+        _;
+    }
+
+    function createProfile(
+        string memory _username,
+        string memory _profileImgUri
+    ) external existingUser {
         s_profiles[msg.sender] = Profile(_username, _profileImgUri);
         s_profileCreated[msg.sender] = true;
         emit ProfileCreated(_username, _profileImgUri);
         profileCount++;
     }
 
-    function updateProfile(string memory _name, string memory _profileImgUri)
-        external
-    {
-        s_profiles[msg.sender] = Profile(_name, _profileImgUri);
+    function updateProfile(
+        string memory _username,
+        string memory _profileImgUri
+    ) external inExistingUser {
+        s_profiles[msg.sender] = Profile(_username, _profileImgUri);
 
-        emit ProfileUpdated(_name, _profileImgUri);
+        emit ProfileUpdated(_username, _profileImgUri);
     }
 
     function getUserProfile(address _userAddress)
