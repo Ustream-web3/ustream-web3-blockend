@@ -1,7 +1,16 @@
 const networkConfig = {
+    31337: {
+        name: "localhost",
+        entryFee: "10000000000000000",
+        votingStartTime: "1668636000",
+        thursdayVotingEndTime: "1668650400",
+    },
     80001: {
         name: "mumbai",
         maticUsdPriceFeed: "0xd0D5e3DB44DE05E9F294BB0a3bEEaF030DE24Ada", // mumbai matic/usd
+        entryFee: "10000000000000000",
+        votingStartTime: "1668636000",
+        thursdayVotingEndTime: "1668650400",
     },
     137: {
         name: "polygon",

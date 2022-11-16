@@ -18,7 +18,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
         networkConfig[chainId].thursdayVotingEndTime,
         streamTokenAddress,
     ]
-    const moviesDao = await deploy("MoviesDao", {
+    const skitsDao = await deploy("SkitsDao", {
         from: deployer,
         args: args,
         log: true,
@@ -30,10 +30,10 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
         process.env.ETHERSCAN_API_KEY
     ) {
         log("Verifying...")
-        await verify(moviesDao.address, args)
+        await verify(skitsDao.address, args)
     }
 
     log("-------------------------------")
 }
 
-module.exports.tags = ["all", "movies-dao"]
+module.exports.tags = ["all", "skits-dao"]
