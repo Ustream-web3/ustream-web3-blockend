@@ -3,12 +3,12 @@ pragma solidity ^0.8.7;
 
 import "./StreamToken.sol";
 
-error MoviesDao__EntryFeeNotEnough();
-error MoviesDao__UserAlreadyVoted();
-error MoviesDao__NotAdmin();
-error MoviesDao__NotChairperson();
+error SkitsDao__EntryFeeNotEnough();
+error SkitsDao__UserAlreadyVoted();
+error SkitsDao__NotAdmin();
+error SkitsDao__NotChairperson();
 
-contract MoviesDao {
+contract SkitsDao {
     // Our Token Contract
     StreamToken streamToken;
 
@@ -20,9 +20,9 @@ contract MoviesDao {
 
     struct Proposal {
         uint256 proposalId;
-        bytes32 title; // movie title
-        uint256 movieVoteCount;
-        uint256 movieVoteAllowance;
+        bytes32 title; // skit title
+        uint256 skitVoteCount;
+        uint256 skitVoteAllowance;
     }
 
     /* State variables */
@@ -32,12 +32,12 @@ contract MoviesDao {
     uint256 private s_proposalsCount = 0;
 
     /* Events */
-    event MovieVote(address indexed user);
+    event SkitVote(address indexed user);
     event ProposalCreated(
         uint256 proposalId,
         bytes32 title,
-        uint256 movieVoteCount,
-        uint256 movieVoteAllowance
+        uint256 skitVoteCount,
+        uint256 skitVoteAllowance
     );
 
     mapping(address => Voter) public voters;
@@ -52,14 +52,14 @@ contract MoviesDao {
 
     modifier onlyAdmin() {
         if (!isAdmin[msg.sender]) {
-            revert MoviesDao__NotAdmin();
+            revert SkitsDao__NotAdmin();
         }
         _;
     }
 
     modifier onlyChairperson() {
         if (!isChairperson[msg.sender]) {
-            revert MoviesDao__NotChairperson();
+            revert SkitsDao__NotChairperson();
         }
         _;
     }
@@ -102,8 +102,8 @@ contract MoviesDao {
                 Proposal({
                     proposalId: s_proposalsCount,
                     title: _proposalTitles[i],
-                    movieVoteCount: 0,
-                    movieVoteAllowance: 1
+                    skitVoteCount: 0,
+                    skitVoteAllowance: 1
                 })
             );
             emit ProposalCreated(s_proposalsCount, _proposalTitles[i], 0, 1);
@@ -114,19 +114,19 @@ contract MoviesDao {
         s_entryFee = amount;
     }
 
-    function voteMovies(uint256 proposal, uint256 currentTime)
+    function voteSkits(uint256 proposal, uint256 currentTime)
         public
         votingLinesAreOpen(currentTime)
     {
         Voter storage sender = voters[msg.sender];
         if (sender.vote == proposals[proposal].proposalId) {
-            revert MoviesDao__UserAlreadyVoted();
+            revert SkitsDao__UserAlreadyVoted();
         }
 
         // // Check that the user's token balance is enough to do the swap
         uint256 userBalance = streamToken.balanceOf(msg.sender);
         if (userBalance >= s_entryFee) {
-            revert MoviesDao__EntryFeeNotEnough();
+            revert SkitsDao__EntryFeeNotEnough();
         }
 
         // Transfer tokens to this contract
@@ -136,14 +136,14 @@ contract MoviesDao {
             address(this),
             s_entryFee
         );
-        require(sent, "Failed to transfer tokens from user to vote movies");
+        require(sent, "Failed to transfer tokens from user to vote skits");
 
         sender.weight = 1;
         sender.voted = true;
         sender.vote = proposals[proposal].proposalId;
-        proposals[proposal].movieVoteCount += 1;
+        proposals[proposal].skitVoteCount += 1;
         //Emit an event when we update a dynamic array or mapping
-        emit MovieVote(msg.sender);
+        emit SkitVote(msg.sender);
     }
 
     /**
@@ -161,22 +161,22 @@ contract MoviesDao {
 
     /**
      * Here we winning vote count is initially assigned to 0
-     * So we iterate and count through the movie votes to get the winner
+     * So we iterate and count through the skit votes to get the winner
      */
     function winningProposal() public view returns (uint256 winningProposal_) {
         uint256 winningVoteCount = 0;
         for (uint256 p = 0; p < proposals.length; p++) {
-            if (proposals[p].movieVoteCount > winningVoteCount) {
-                winningVoteCount = proposals[p].movieVoteCount;
+            if (proposals[p].skitVoteCount > winningVoteCount) {
+                winningVoteCount = proposals[p].skitVoteCount;
                 winningProposal_ = p;
             }
         }
     }
 
     /**
-     * Here, the movie that won is returned with its title
+     * Here, the skit that won is returned with its title
      */
-    function movieWinnerTitle() external view returns (bytes32 winnerTitle_) {
+    function skitWinnerTitle() external view returns (bytes32 winnerTitle_) {
         winnerTitle_ = proposals[winningProposal()].title;
     }
 
