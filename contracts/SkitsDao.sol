@@ -165,8 +165,8 @@ contract SkitsDao {
     }
 
     /**
-     * Here we winning vote count is initially assigned to 0
-     * So we iterate and count through the skit votes to get the winner
+     * Here the winning vote count is initially assigned to 0
+     * So we iterate and get through the skit votes to get the winner
      */
     function winningProposal() public view returns (uint256 winningProposal_) {
         uint256 winningVoteCount = 0;
