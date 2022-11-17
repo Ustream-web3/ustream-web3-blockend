@@ -88,14 +88,14 @@ contract SkitsDao {
         streamToken = StreamToken(tokenAddress);
     }
 
-    function setAdmin(address userAddress) external onlyAdmin {
+    function setAdmin(address userAddress) external onlyChairperson {
         isAdmin[userAddress] = true;
     }
 
-    function createProposals(bytes32[] memory _proposalTitles)
-        external
-        onlyAdmin
-    {
+    function createProposals(
+        bytes32[] memory _proposalTitles,
+        uint256 skitVoteAllowance
+    ) external onlyAdmin {
         for (uint256 i = 0; i < _proposalTitles.length; i++) {
             s_proposalsCount += 1;
             proposals.push(
@@ -103,10 +103,15 @@ contract SkitsDao {
                     proposalId: s_proposalsCount,
                     title: _proposalTitles[i],
                     skitVoteCount: 0,
-                    skitVoteAllowance: 1
+                    skitVoteAllowance: skitVoteAllowance
                 })
             );
-            emit ProposalCreated(s_proposalsCount, _proposalTitles[i], 0, 1);
+            emit ProposalCreated(
+                s_proposalsCount,
+                _proposalTitles[i],
+                0,
+                skitVoteAllowance
+            );
         }
     }
 
@@ -191,5 +196,9 @@ contract SkitsDao {
      */
     function getVotingEndTime() public view returns (uint256 endTime) {
         endTime = s_thursdayVotingEndTime;
+    }
+
+    function getIsAdmin(address userAddress) public view returns (bool) {
+        return isAdmin[userAddress];
     }
 }

@@ -18,13 +18,13 @@ const movieVoteAllowance = 1
 // use(solidity)
 !developmentChains.includes(network.name)
     ? describe.skip
-    : describe("MoviesDao Unit Test", () => {
+    : describe("SkitsDao Unit Test", () => {
           let owner
           let addr1
           let addr2
           let addrs
 
-          let moviesDaoContract
+          let skitsDaoContract
           let tokenContract
           let StreamTokenFactory
 
@@ -38,10 +38,10 @@ const movieVoteAllowance = 1
               tokenContract = await StreamTokenFactory.deploy()
 
               // Deploy Staker Contract
-              const MoviesDaoContract = await ethers.getContractFactory(
-                  "MoviesDao"
+              const SkitsDaoContract = await ethers.getContractFactory(
+                  "SkitsDao"
               )
-              moviesDaoContract = await MoviesDaoContract.deploy(
+              skitsDaoContract = await SkitsDaoContract.deploy(
                   entryFee,
                   votingStartTime,
                   thursdayVotingEndTime,
@@ -49,12 +49,12 @@ const movieVoteAllowance = 1
               )
 
               await tokenContract.approve(
-                  moviesDaoContract.address,
+                  skitsDaoContract.address,
                   ethers.utils.parseEther("1000")
               )
 
               await tokenContract.increaseAllowance(
-                  moviesDaoContract.address,
+                  skitsDaoContract.address,
                   ethers.utils.parseEther("1000")
               )
           })
@@ -62,83 +62,50 @@ const movieVoteAllowance = 1
           describe("Admin Methods", () => {
               it("should allow only chairperson set admin", async () => {
                   await expect(
-                      moviesDaoContract.connect(addr1).setAdmin(addr2.address)
-                  ).to.be.revertedWith("MoviesDao__NotChairperson()")
+                      skitsDaoContract.connect(addr1).setAdmin(addr2.address)
+                  ).to.be.revertedWith("SkitsDao__NotChairperson()")
               })
               it("should sets an account to admin", async () => {
-                  await moviesDaoContract.setAdmin(addr1.address)
-                  const isAdmin = await moviesDaoContract.getIsAdmin(
+                  await skitsDaoContract.setAdmin(addr1.address)
+                  const isAdmin = await skitsDaoContract.getIsAdmin(
                       addr1.address
                   )
                   assert(isAdmin)
               })
               it("should accept proposals from only admin", async () => {
                   await expect(
-                      moviesDaoContract
+                      skitsDaoContract
                           .connect(addr1)
                           .createProposals(_proposalTitles, movieVoteAllowance)
-                  ).to.be.revertedWith("MoviesDao__NotAdmin()")
+                  ).to.be.revertedWith("SkitsDao__NotAdmin()")
               })
               it("should allow only admins update entry fee", async () => {
                   await expect(
-                      moviesDaoContract.connect(addr1).setEntryFee(1000)
-                  ).to.be.revertedWith("MoviesDao__NotAdmin()")
+                      skitsDaoContract.connect(addr1).setEntryFee(1000)
+                  ).to.be.revertedWith("SkitsDao__NotAdmin()")
               })
               it("should allow only admins update voting time", async () => {
                   await expect(
-                      moviesDaoContract
+                      skitsDaoContract
                           .connect(addr1)
                           .updateVotingTime(1000, 2000)
-                  ).to.be.revertedWith("MoviesDao__NotAdmin()")
+                  ).to.be.revertedWith("SkitsDao__NotAdmin()")
               })
           })
 
-          //   describe("Create proposal method", () => {
-          //       it("should create a proposal and emit an event for each", async () => {
-          //           for (i = 0; i <= _proposalTitles.length; i++) {
-          //               await expect(
-          //                   moviesDaoContract.createProposals(
-          //                       [_proposalTitles[i]],
-          //                       movieVoteAllowance
-          //                   )
-          //               )[0]
-          //                   .to.emit(moviesDaoContract, "ProposalCreated")
-          //                   .withArgs(0, [_proposalTitles[i]], 0, 1)
-          //           }
-          //       })
-          //   })
-
-          describe("Vote movies method", () => {
-              // create a proposal
-              // check if voting lines are open
-              // revert if already voted
-              // revert if balance not enough
-              // transfer tokens: increase allowance
-              // emit that event
-              //   it("should create a proposal and emit an event for each", async () => {
-              //       for (i = 0; i <= _proposalTitles.length; i++) {
-              //           await expect(
-              //               moviesDaoContract.createProposals(
-              //                   [_proposalTitles[i]],
-              //                   movieVoteAllowance
-              //               )
-              //           )
-              //               .to.emit(moviesDaoContract, "ProposalCreated")
-              //               .withArgs(0, [_proposalTitles[i]], 0, 1)
-              //       }
-              //   })
+          describe("Vote skits method", () => {
               it("should update voting time", async () => {
-                  await moviesDaoContract.updateVotingTime(10, 20)
-                  const startTime = await moviesDaoContract.s_votingStartTime()
+                  await skitsDaoContract.updateVotingTime(10, 20)
+                  const startTime = await skitsDaoContract.s_votingStartTime()
                   const votingEndTime =
-                      await moviesDaoContract.s_thursdayVotingEndTime()
+                      await skitsDaoContract.s_thursdayVotingEndTime()
                   assert(startTime.toString() == "10")
                   assert(votingEndTime.toString() == "20")
               })
           })
           it("should update entry fee", async () => {
-              await moviesDaoContract.setEntryFee(10)
-              const entryFee = await moviesDaoContract.getEntryFee()
+              await skitsDaoContract.setEntryFee(10)
+              const entryFee = await skitsDaoContract.getEntryFee()
               assert(entryFee.toString() == "10")
           })
       })
