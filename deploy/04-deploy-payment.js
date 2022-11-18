@@ -23,7 +23,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
 
     if (
         !developmentChains.includes(network.name) &&
-        process.env.ETHERSCAN_API_KEY
+        process.env.POLYGONSCAN_API_KEY
     ) {
         log("Verifying...")
         await verify(payment.address, args)

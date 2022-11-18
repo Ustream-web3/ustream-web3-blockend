@@ -1,5 +1,5 @@
 const { network, ethers } = require("hardhat")
-const { developmentChains } = require("../helper-hardhat-config")
+const { developmentChains, networkConfig } = require("../helper-hardhat-config")
 const { verify } = require("../utils/verify")
 
 const TOKEN_CAP = ethers.utils.parseEther("100000")
@@ -7,6 +7,7 @@ const TOKEN_CAP = ethers.utils.parseEther("100000")
 module.exports = async function ({ getNamedAccounts, deployments }) {
     const { deploy, log } = deployments
     const { deployer, user } = await getNamedAccounts()
+    const chainId = network.config.chainId
 
     let streamTokenAddress, maticUsdPriceFeedAddress, streamToken, vendor
 
@@ -16,7 +17,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
         const maticUsdAggregator = await deployments.get("MockV3Aggregator")
         maticUsdPriceFeedAddress = maticUsdAggregator.address
     } else {
-        maticUsdPriceFeedAddress = networkConfig[chainId]["ethUsdPriceFeed"]
+        maticUsdPriceFeedAddress = networkConfig[chainId]["maticUsdPriceFeed"]
     }
 
     const args = [streamTokenAddress, maticUsdPriceFeedAddress]
@@ -40,7 +41,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
 
     if (
         !developmentChains.includes(network.name) &&
-        process.env.ETHERSCAN_API_KEY
+        process.env.POLYGONSCAN_API_KEY
     ) {
         log("Verifying...")
         await verify(vendor.address, args)
