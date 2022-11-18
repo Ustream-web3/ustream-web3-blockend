@@ -33,7 +33,7 @@ module.exports = {
         matic: {
             url: MUMBAI_RPC_URL,
             accounts: [PRIVATE_KEY],
-            // chainId: 80001,
+            chainId: 80001,
             blockConfirmations: 6,
         },
     },
