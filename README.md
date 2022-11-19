@@ -82,3 +82,12 @@ git merge upstream/master
 This will give you any eventual conflicts and allow you to easily solve them in your repo. It's a good idea to use it frequently in between your own commits to make sure that your repo is up to date with its parent.
 
 For more information on syncing forks [read this article from Github](https://help.github.com/articles/syncing-a-fork/).
+
+# Deployed Smart Contracts
+
+User Registry: 0x7A6E27043dea49b186E1D847e47C533DA6c5C88c https://mumbai.polygonscan.com/address/0x7A6E27043dea49b186E1D847e47C533DA6c5C88c
+Stream Token: 0x8d2415c52238a3e9327fa0b9b0e3a14fd642fc1b https://mumbai.polygonscan.com/address/0x8d2415c52238a3e9327fa0b9b0e3a14fd642fc1b
+Vendor: 0x4d4d664a4bFec3e9Eb0131Bf92f4cBf854E32781 https://mumbai.polygonscan.com/address/0x4d4d664a4bFec3e9Eb0131Bf92f4cBf854E32781
+Payment: 0x17296001B757c834FD007d1542D4D6A75dAD720c https://mumbai.polygonscan.com/address/0x17296001B757c834FD007d1542D4D6A75dAD720c
+MoviesDao: 0xE0b8d1d80F9aA083564752030C93CBa8602192b3 https://mumbai.polygonscan.com/address/0xE0b8d1d80F9aA083564752030C93CBa8602192b3
+SkitsDao: 0x25C6C62d615e10e838ed23369444dbB2763362BA https://mumbai.polygonscan.com/address/0x25C6C62d615e10e838ed23369444dbB2763362BA
