@@ -4,11 +4,15 @@ pragma solidity ^0.8.7;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./StreamToken.sol";
+import "./library/PriceConverter.sol";
 
 contract Payment is Ownable {
+    using PriceConverter for uint256;
+
     StreamToken streamToken;
     uint256 public nextPlanId;
     address private i_vendorAddress;
+    AggregatorV3Interface private s_priceFeed;
 
     struct Plan {
         string planName;
@@ -45,15 +49,19 @@ contract Payment is Ownable {
         uint256 date
     );
 
-    constructor(address tokenAddress, address vendorAddress) {
+    constructor(
+        address tokenAddress,
+        address vendorAddress,
+        address priceFeedAddress
+    ) {
         streamToken = StreamToken(tokenAddress);
         i_vendorAddress = vendorAddress;
+        s_priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
     function createPlan(
         string memory _planName,
-        /*address token,*/
-        uint256 amount,
+        /*address token,*/ uint256 amount,
         uint256 frequency
     ) external onlyOwner {
         // require(token != address(0), "address cannot be null address");
@@ -64,21 +72,23 @@ contract Payment is Ownable {
             msg.sender,
             // token,
             amount,
-            frequency
+            frequency /* 1 year = 31,536,000; 2 months =  5,356,800 */
         );
         nextPlanId++;
     }
 
-    function subscribe(uint256 planId) external {
+    function subscribe(uint256 planId) external payable {
         Plan storage plan = plans[planId]; // accesing plan details
         require(plan.merchant != address(0), "this plan does not exist");
-        // Transfer token to the vendor contract
-        bool sent = streamToken.transferFrom(
-            msg.sender,
-            i_vendorAddress,
-            plan.amount
+        // transfer subscription funds
+        uint256 amountToBuy = plan.amount * 1e18; // 1 * 10 ^ 18
+        require(
+            msg.value.getConversionRate(s_priceFeed) == amountToBuy,
+            "Value not equal to subscription amount!"
         );
-        require(sent, "Failed to transfer token to vendor");
+        // Transfer token to the vendor contract
+        // (bool sent) = streamToken.transferFrom(msg.sender, i_vendorAddress, plan.amount);
+        // require(sent, "Failed to transfer token to vendor");
         emit PaymentSent(
             msg.sender,
             plan.merchant,
@@ -130,11 +140,10 @@ contract Payment is Ownable {
         subscription.nextPayment = subscription.nextPayment + plan.frequency;
     }
 
-    function getSubscriptionStatus(address subscriber, uint256 planId)
-        external
-        view
-        returns (bool)
-    {
+    function getSubscriptionStatus(
+        address subscriber,
+        uint256 planId
+    ) external view returns (bool) {
         Subscription storage subscription = subscriptions[subscriber][planId];
         if (block.timestamp > subscription.nextPayment) {
             return false;
