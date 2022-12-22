@@ -6,8 +6,17 @@ import "./StreamToken.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./library/PriceConverter.sol";
 
+error Vendor__YearlyEarnLimitReached();
+
 contract Vendor is Ownable {
     using PriceConverter for uint256;
+
+    struct EarningAddress {
+        address earner;
+        bool startedStreaming;
+        uint256 dollarWorthOfTokensEarned;
+        uint256 maxEarnTime;
+    }
 
     // Our Token Contract
     StreamToken streamToken;
@@ -15,6 +24,7 @@ contract Vendor is Ownable {
     // token price for ETH
     uint256 public constant tokensPerEth = 10;
     uint256 public constant MINIMUM_USD = 0.5 * 1e18;
+    uint256 public s_maxTokenEarn;
     AggregatorV3Interface private s_priceFeed;
     address[] private s_buyers;
 
@@ -27,6 +37,7 @@ contract Vendor is Ownable {
     );
 
     mapping(address => uint256) private s_addressToAmountBought;
+    mapping(address => EarningAddress) public addressToTokensEarned;
 
     // ethToUSd => 0x8A753747A1Fa494EC906cE90E9f37563A8AF630e
     constructor(address tokenAddress, address priceFeedAddress) {
@@ -109,5 +120,40 @@ contract Vendor is Ownable {
 
         (bool sent, ) = msg.sender.call{value: address(this).balance}("");
         require(sent, "Failed to send user balance back to the owner");
+    }
+
+    function streamToEarn(address streamer, uint256 amount) external onlyOwner {
+        EarningAddress storage earningAddress = addressToTokensEarned[streamer];
+        // condition for streamers
+        if (!earningAddress.startedStreaming) {
+            uint256 earnTime = block.timestamp + 31536000;
+            earningAddress.maxEarnTime = earnTime;
+            earningAddress.startedStreaming = true;
+            // send $ worth of token
+            // Transfer token to the streamer
+            bool sent = streamToken.transfer(msg.sender, amount);
+            require(sent, "Failed to transfer token to vendor");
+        }
+        // if the yearly limit is passed unlock a new year limit and revert earnings to zero
+        if (block.timestamp >= earningAddress.maxEarnTime) {
+            uint256 newEarnTime = block.timestamp + 31536000;
+            earningAddress.maxEarnTime = newEarnTime;
+            earningAddress.dollarWorthOfTokensEarned = 0;
+            // Transfer token to the streamer
+            bool sent = streamToken.transfer(msg.sender, amount);
+            require(sent, "Failed to transfer token to vendor");
+        }
+        // condition for maximum token limit
+        if (earningAddress.dollarWorthOfTokensEarned >= s_maxTokenEarn) {
+            revert Vendor__YearlyEarnLimitReached();
+        }
+    }
+
+    function setMaxTokenWorth(uint256 max) external {
+        s_maxTokenEarn = max;
+    }
+
+    function getMaxTokenWorth() external view returns (uint256) {
+        return s_maxTokenEarn;
     }
 }
