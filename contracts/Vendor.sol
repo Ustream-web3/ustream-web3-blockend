@@ -125,7 +125,7 @@ contract Vendor is Ownable {
     function streamToEarn(address streamer, uint256 amount) external onlyOwner {
         EarningAddress storage earningAddress = addressToTokensEarned[streamer];
         // condition for streamers
-        if (!earningAddress.startedStreaming) {
+        if (earningAddress.startedStreaming == false) {
             uint256 earnTime = block.timestamp + 31536000;
             earningAddress.maxEarnTime = earnTime;
             earningAddress.startedStreaming = true;
@@ -133,23 +133,37 @@ contract Vendor is Ownable {
             // Transfer token to the streamer
             bool sent = streamToken.transfer(msg.sender, amount);
             require(sent, "Failed to transfer token to vendor");
+            earningAddress.dollarWorthOfTokensEarned =
+                earningAddress.dollarWorthOfTokensEarned +
+                amount;
         }
         // if the yearly limit is passed unlock a new year limit and revert earnings to zero
-        if (block.timestamp >= earningAddress.maxEarnTime) {
+        else if (block.timestamp >= earningAddress.maxEarnTime) {
             uint256 newEarnTime = block.timestamp + 31536000;
             earningAddress.maxEarnTime = newEarnTime;
             earningAddress.dollarWorthOfTokensEarned = 0;
             // Transfer token to the streamer
-            bool sent = streamToken.transfer(msg.sender, amount);
+            bool sent = streamToken.transfer(streamer, amount);
             require(sent, "Failed to transfer token to vendor");
         }
         // condition for maximum token limit
-        if (earningAddress.dollarWorthOfTokensEarned >= s_maxTokenEarn) {
+        else if (earningAddress.dollarWorthOfTokensEarned >= s_maxTokenEarn) {
             revert Vendor__YearlyEarnLimitReached();
+        } else {
+            uint256 earnTime = block.timestamp + 31536000;
+            earningAddress.maxEarnTime = earnTime;
+            earningAddress.startedStreaming = true;
+            // send $ worth of token
+            // Transfer token to the streamer
+            bool sent = streamToken.transfer(msg.sender, amount);
+            require(sent, "Failed to transfer token to vendor");
+            earningAddress.dollarWorthOfTokensEarned =
+                earningAddress.dollarWorthOfTokensEarned +
+                amount;
         }
     }
 
-    function setMaxTokenWorth(uint256 max) external {
+    function setMaxTokenWorth(uint256 max) external onlyOwner {
         s_maxTokenEarn = max;
     }
 
