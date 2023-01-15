@@ -12,7 +12,6 @@ contract Vendor is Ownable {
     using PriceConverter for uint256;
 
     struct EarningAddress {
-        address earner;
         bool startedStreaming;
         uint256 dollarWorthOfTokensEarned;
         uint256 maxEarnTime;
@@ -46,7 +45,7 @@ contract Vendor is Ownable {
     }
 
     /**
-     * @notice Allow users to buy tokens for ETH
+     * @notice Allow users to buy tokens for coin
      */
 
     function buyTokens() public payable returns (uint256 tokenAmount) {
@@ -126,12 +125,16 @@ contract Vendor is Ownable {
         EarningAddress storage earningAddress = addressToTokensEarned[streamer];
         // condition for streamers
         if (earningAddress.startedStreaming == false) {
+            require(
+                amount <= s_maxTokenEarn,
+                "Amount is greater than max earn limit"
+            );
             uint256 earnTime = block.timestamp + 31536000;
             earningAddress.maxEarnTime = earnTime;
             earningAddress.startedStreaming = true;
             // send $ worth of token
             // Transfer token to the streamer
-            bool sent = streamToken.transfer(msg.sender, amount);
+            bool sent = streamToken.transfer(streamer, amount);
             require(sent, "Failed to transfer token to vendor");
             earningAddress.dollarWorthOfTokensEarned =
                 earningAddress.dollarWorthOfTokensEarned +
@@ -144,7 +147,7 @@ contract Vendor is Ownable {
             earningAddress.dollarWorthOfTokensEarned = 0;
             // Transfer token to the streamer
             bool sent = streamToken.transfer(streamer, amount);
-            require(sent, "Failed to transfer token to vendor");
+            require(sent, "Failed to transfer token to streamer");
         }
         // condition for maximum token limit
         else if (earningAddress.dollarWorthOfTokensEarned >= s_maxTokenEarn) {
@@ -155,8 +158,8 @@ contract Vendor is Ownable {
             earningAddress.startedStreaming = true;
             // send $ worth of token
             // Transfer token to the streamer
-            bool sent = streamToken.transfer(msg.sender, amount);
-            require(sent, "Failed to transfer token to vendor");
+            bool sent = streamToken.transfer(streamer, amount);
+            require(sent, "Failed to transfer token to streamer");
             earningAddress.dollarWorthOfTokensEarned =
                 earningAddress.dollarWorthOfTokensEarned +
                 amount;
