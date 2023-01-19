@@ -14,8 +14,6 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
 
     const args = [
         networkConfig[chainId].entryFee,
-        networkConfig[chainId].votingStartTime,
-        networkConfig[chainId].thursdayVotingEndTime,
         streamTokenAddress,
     ]
     const skitsDao = await deploy("SkitsDao", {

@@ -68,21 +68,12 @@ contract SkitsDao {
 
     /**
      * @param entryFee for the token
-     * @param votingStartTime When the voting process will start
-     * @param thursdayVotingEndTime When the voting process will end
      */
 
     /* Functions */
 
-    constructor(
-        uint256 entryFee,
-        uint256 votingStartTime,
-        uint256 thursdayVotingEndTime,
-        address tokenAddress
-    ) {
+    constructor(uint256 entryFee, address tokenAddress) {
         s_entryFee = entryFee;
-        s_votingStartTime = votingStartTime;
-        s_thursdayVotingEndTime = thursdayVotingEndTime;
         isAdmin[msg.sender] = true;
         isChairperson[msg.sender] = true;
         streamToken = StreamToken(tokenAddress);
@@ -119,10 +110,10 @@ contract SkitsDao {
         s_entryFee = amount;
     }
 
-    function voteSkits(uint256 proposal, uint256 currentTime)
-        public
-        votingLinesAreOpen(currentTime)
-    {
+    function voteSkits(
+        uint256 proposal,
+        uint256 currentTime
+    ) public votingLinesAreOpen(currentTime) {
         Voter storage sender = voters[msg.sender];
         if (sender.vote == proposals[proposal].proposalId) {
             revert SkitsDao__UserAlreadyVoted();
@@ -130,7 +121,7 @@ contract SkitsDao {
 
         // // Check that the user's token balance is enough to do the swap
         uint256 userBalance = streamToken.balanceOf(msg.sender);
-        if (userBalance >= s_entryFee) {
+        if (userBalance < s_entryFee) {
             revert SkitsDao__EntryFeeNotEnough();
         }
 
@@ -156,10 +147,10 @@ contract SkitsDao {
      * @param votingStartTime Current time that needs to be updated
      * @param votingEndTime Current time that needs to be updated
      */
-    function updateVotingTime(uint256 votingStartTime, uint256 votingEndTime)
-        external
-        onlyAdmin
-    {
+    function updateVotingTime(
+        uint256 votingStartTime,
+        uint256 votingEndTime
+    ) external onlyAdmin {
         s_votingStartTime = votingStartTime;
         s_thursdayVotingEndTime = votingEndTime;
     }

@@ -121,7 +121,7 @@ contract Vendor is Ownable {
         require(sent, "Failed to send user balance back to the owner");
     }
 
-    function streamToEarn(address streamer, uint256 amount) external onlyOwner {
+    function streamToEarn(address streamer, uint256 amount) external {
         EarningAddress storage earningAddress = addressToTokensEarned[streamer];
         // condition for streamers
         if (earningAddress.startedStreaming == false) {
