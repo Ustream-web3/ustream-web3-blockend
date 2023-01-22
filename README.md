@@ -86,8 +86,8 @@ For more information on syncing forks [read this article from Github](https://he
 # Deployed Smart Contracts
 
 User Registry: 0x7A6E27043dea49b186E1D847e47C533DA6c5C88c https://mumbai.polygonscan.com/address/0x7A6E27043dea49b186E1D847e47C533DA6c5C88c
-Stream Token: 0x8d2415c52238a3e9327fa0b9b0e3a14fd642fc1b https://mumbai.polygonscan.com/address/0x8d2415c52238a3e9327fa0b9b0e3a14fd642fc1b
-Vendor: 0x4d4d664a4bFec3e9Eb0131Bf92f4cBf854E32781 https://mumbai.polygonscan.com/address/0x4d4d664a4bFec3e9Eb0131Bf92f4cBf854E32781
-Payment: 0x17296001B757c834FD007d1542D4D6A75dAD720c https://mumbai.polygonscan.com/address/0x17296001B757c834FD007d1542D4D6A75dAD720c
-MoviesDao: 0xE0b8d1d80F9aA083564752030C93CBa8602192b3 https://mumbai.polygonscan.com/address/0xE0b8d1d80F9aA083564752030C93CBa8602192b3
-SkitsDao: 0x25C6C62d615e10e838ed23369444dbB2763362BA https://mumbai.polygonscan.com/address/0x25C6C62d615e10e838ed23369444dbB2763362BA
+Stream Token: 0x001b905E0f0A250b053d4F7F0a728A40D23Df67B https://mumbai.polygonscan.com/address/0x001b905E0f0A250b053d4F7F0a728A40D23Df67B
+Vendor: 0xfC0086EcD998fB20944908cb0AAAF6Faf3b2Ca98 https://mumbai.polygonscan.com/address/0xfC0086EcD998fB20944908cb0AAAF6Faf3b2Ca98
+Payment: 0x9C5c934509138F9fc901ee1aCfbD193EeA334A13 https://mumbai.polygonscan.com/address/0x9C5c934509138F9fc901ee1aCfbD193EeA334A13
+MoviesDao: 0x012A7a682791819fFEc4532bd1D82C136791FEbD https://mumbai.polygonscan.com/address/0x012A7a682791819fFEc4532bd1D82C136791FEbD
+SkitsDao: 0xD63FA3aF529Fc66fe29D63374ffbd478AA6B52b3 https://mumbai.polygonscan.com/address/0xD63FA3aF529Fc66fe29D63374ffbd478AA6B52b3
