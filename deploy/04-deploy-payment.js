@@ -6,14 +6,20 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()
 
-    let streamTokenAddress, vendorAddress
+    let streamTokenAddress, vendorAddress, maticUsdPriceFeedAddress
 
     const streamToken = await deployments.get("StreamToken")
     streamTokenAddress = streamToken.address
+    if (developmentChains.includes(network.name)) {
+        const maticUsdAggregator = await deployments.get("MockV3Aggregator")
+        maticUsdPriceFeedAddress = maticUsdAggregator.address
+    } else {
+        maticUsdPriceFeedAddress = networkConfig[chainId]["maticUsdPriceFeed"]
+    }
     const vendor = await deployments.get("Vendor")
     vendorAddress = vendor.address
 
-    const args = [streamTokenAddress, vendorAddress]
+    const args = [streamTokenAddress, vendorAddress, maticUsdPriceFeedAddress]
     const payment = await deploy("Payment", {
         from: deployer,
         args: args,
